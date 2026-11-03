@@ -1,0 +1,1017 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Di Adventskalender ❤️</title>
+
+    <style>
+        :root {
+            --gruen: #17382E;
+            --gruen-hell: #285344;
+            --creme: #F5E9D0;
+            --gold: #C9A227;
+            --gold-hell: #E7C85A;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--gruen);
+            color: var(--creme);
+            font-family: Georgia, "Times New Roman", serif;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        /* Kopfbereich */
+
+        header {
+            padding: 35px 15px 20px;
+        }
+
+        h1 {
+            font-size: clamp(28px, 5vw, 42px);
+            color: var(--gold);
+            margin: 0 0 18px;
+        }
+
+        .banner {
+            font-size: 19px;
+            line-height: 1.7;
+            margin: 0 auto;
+        }
+
+        .banner strong {
+            color: var(--gold-hell);
+            font-size: 22px;
+        }
+
+        /* Adventskalender */
+
+        .kalender {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            max-width: 800px;
+            margin: 30px auto 50px;
+            padding: 0 20px;
+        }
+
+        .tuerchen {
+            position: relative;
+            min-height: 130px;
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            background: var(--gruen-hell);
+            color: var(--gold-hell);
+            font-family: inherit;
+            font-size: 38px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.22);
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .tuerchen:hover:not(:disabled) {
+            transform: translateY(-5px);
+            background: #32664f;
+            box-shadow: 0 8px 20px rgba(201, 162, 39, 0.25);
+        }
+
+        .tuerchen:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        .tuerchen:focus-visible {
+            outline: 3px solid var(--creme);
+            outline-offset: 4px;
+        }
+
+        /* Noch geschlossene Türchen */
+
+        .tuerchen:disabled {
+            cursor: not-allowed;
+            color: #a99a72;
+            background: #243e34;
+            border-color: #8c7836;
+            opacity: 0.7;
+        }
+
+        /* Sterne auf den Türchen */
+
+        .stern {
+            position: absolute;
+            color: var(--gold);
+            font-size: 15px;
+            font-weight: normal;
+        }
+
+        .stern-oben {
+            top: 10px;
+            right: 12px;
+        }
+
+        .stern-unten {
+            bottom: 10px;
+            left: 12px;
+        }
+
+        /* Bereits geöffnete Türchen */
+
+        .tuerchen.geoeffnet {
+            background: #3a654b;
+            border-color: var(--gold-hell);
+        }
+
+        .tuerchen.geoeffnet::after {
+            content: "✓";
+            position: absolute;
+            right: 10px;
+            bottom: 8px;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            color: var(--creme);
+        }
+
+        /* Persönliche Begrüssung */
+
+        .begruesung-hintergrund {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.82);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .begruesung-hintergrund.aktiv {
+            display: flex;
+        }
+
+        .begruesung {
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 35px 25px;
+            background: var(--creme);
+            color: var(--gruen);
+            border: 3px solid var(--gold);
+            border-radius: 18px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+            animation: modalErscheinen 0.3s ease;
+        }
+
+        .begruesung h2 {
+            color: #8b6b13;
+            font-size: 29px;
+            margin: 0 0 20px;
+        }
+
+        .begruesung p {
+            font-size: 19px;
+            line-height: 1.7;
+            white-space: pre-line;
+        }
+
+        .begruesung-button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            background: var(--gruen);
+            color: var(--creme);
+            font-family: inherit;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        .begruesung-button:hover {
+            background: var(--gruen-hell);
+        }
+
+        /* Modal für Fotos und Gutscheine */
+
+        .modal-hintergrund {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.78);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-hintergrund.aktiv {
+            display: flex;
+        }
+
+        .modal {
+            position: relative;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 35px 25px;
+            background: var(--creme);
+            color: var(--gruen);
+            border: 3px solid var(--gold);
+            border-radius: 18px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+            animation: modalErscheinen 0.25s ease;
+        }
+
+        @keyframes modalErscheinen {
+            from {
+                opacity: 0;
+                transform: scale(0.92);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal h2 {
+            margin: 0 0 22px;
+            font-size: 27px;
+            color: #8b6b13;
+        }
+
+        .modal p {
+            font-size: 20px;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .modal img {
+            display: block;
+            max-width: 100%;
+            max-height: 55vh;
+            margin: 0 auto;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+
+        .schliessen {
+            margin-top: 25px;
+            padding: 12px 25px;
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            background: var(--gruen);
+            color: var(--creme);
+            font-size: 16px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .schliessen:hover {
+            background: var(--gruen-hell);
+        }
+
+        /* Schnee */
+
+        .schnee {
+            position: fixed;
+            top: -20px;
+            z-index: 10;
+            pointer-events: none;
+            color: white;
+            animation-name: schneefall;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
+        }
+
+        @keyframes schneefall {
+            from {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        /* Goldene Sterne */
+
+        .goldstern {
+            position: fixed;
+            z-index: 9;
+            pointer-events: none;
+            color: var(--gold-hell);
+            animation: sternfunkeln 3s ease-in-out infinite;
+        }
+
+        @keyframes sternfunkeln {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Handy */
+
+        @media (max-width: 600px) {
+            header {
+                padding-top: 25px;
+            }
+
+            .banner {
+                font-size: 16px;
+            }
+
+            .banner strong {
+                font-size: 19px;
+            }
+
+            .kalender {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 10px;
+                margin-top: 25px;
+                padding: 0 12px;
+            }
+
+            .tuerchen {
+                min-height: 105px;
+                font-size: 32px;
+            }
+
+            .modal {
+                padding: 28px 18px;
+            }
+
+            .modal p {
+                font-size: 18px;
+            }
+
+            .begruesung {
+                padding: 28px 18px;
+            }
+
+            .begruesung p {
+                font-size: 17px;
+            }
+        }
+
+        /* Weniger Bewegung */
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🎄 Di Adventskalender 🎄</h1>
+
+        <p class="banner">
+            <strong>24 Überraschige für di ❤️</strong><br>
+            12x es Foto vor Reis oder vo früecher,<br>
+            12x chlini Guetschiine
+        </p>
+    </header>
+
+    <main>
+        <div class="kalender" id="kalender"></div>
+    </main>
+
+    <!-- Persönliche Begrüssung -->
+
+    <div class="begruesung-hintergrund" id="begruesungHintergrund">
+
+        <div class="begruesung">
+
+            <h2>Hoi Schnäggli ❤️</h2>
+
+            <p>Schön chöi mir die Reis zämä mache und d'Adväntszyt mau chli angers vrbringe.
+
+Ich wünsche dir ganz viu Fröid mit den 24 chline Überraschige wo gli jede Tag uf di warte
+
+Jedes Türli versteckt e Erinnerig a die oder vrganeni Reise oder es paar Guetschiine wo du öppis chlises bechunnsch❤️
+
+Ig liebe di ❤️</p>
+
+            <button
+                class="begruesung-button"
+                id="begruesungButton"
+                type="button"
+            >
+                Los geits! ❤️
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Modal für Fotos und Gutscheine -->
+
+    <div class="modal-hintergrund" id="modalHintergrund">
+        <div
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modalTitel"
+        >
+            <h2 id="modalTitel"></h2>
+
+            <div id="modalInhalt"></div>
+
+            <button
+                class="schliessen"
+                id="schliessenButton"
+                type="button"
+            >
+                Schliessen ❤️
+            </button>
+        </div>
+    </div>
+
+    <script>
+
+        // ========================================
+        // DEINE 24 ÜBERRASCHUNGEN
+        // ========================================
+
+        const ueberraschungen = [
+
+            // 1 - Foto
+            {
+                typ: "foto",
+                titel: "Üses erschte Foto vom Annapurna-Trek ❤️",
+                datei: "foto_1.jpg"
+            },
+
+            // 2 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Es Kaffi ❤️",
+                text: "Ig hole dir es Kaffi - was wosch für eis?❤️"
+            },
+
+            // 3 - Foto
+            {
+                typ: "foto",
+                titel: "nid uf dr Reis aber glich e wunderschöne Tag gsi",
+                datei: "foto_3.jpg"
+            },
+
+            // 4 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Dis Lieblingsgetränk ❤️",
+                text: "Ig hole dir dis Lieblingsgetränk usm 7/11❤️"
+            },
+
+            // 5 - Foto
+            {
+                typ: "foto",
+                titel: "Üsi erschti wyti Reis nach Costa Rica ❤️",
+                datei: "foto_5.jpg"
+            },
+
+            // 6 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Ässä",
+                text: "Hüt geit ds z'Nacht uf mi❤️ - Du suechsch ds Restaurant us 😉!"
+            },
+
+            // 7 - Foto
+            {
+                typ: "foto",
+                titel: "Neuseeland - so toll gsi ❤️",
+                datei: "foto_7.jpg"
+            },
+
+            // 8 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Hochhus-Aabe ❤️",
+                text: "Hüt aabe ufnes Hochhus öppis ga trinke - du nimsch was wosch❤️"
+            },
+
+            // 9 - Foto
+            {
+                typ: "foto",
+                titel: "was für nes tolls Erläbnis mit dene Delfine",
+                datei: "foto_9.jpg"
+            },
+
+            // 10 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Es Bierli uf mi ❤️",
+                text: "Hüt aabe geit ds Bierli uf mii❤️"
+            },
+
+            // 11 - Foto
+            {
+                typ: "foto",
+                titel: "nid uf dr Reis, aber dä Tag blibt üs gloub glich in Erinnerig ❤️",
+                datei: "foto_11.jpg"
+            },
+
+            // 12 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Kokosnuss am Strand ❤️",
+                text: "Hüt gits am Strand e Kokosnuss❤️"
+            },
+
+            // 13 - Foto
+            {
+                typ: "foto",
+                titel: "eis vo mine Lieblingsfotos ❤️",
+                datei: "foto_13.jpg"
+            },
+
+            // 14 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Massage ❤️",
+                text: "Hüt gö mir id Massage❤️"
+            },
+
+            // 15 - Foto
+            {
+                typ: "foto",
+                titel: "wosch hüt chli über üses Hochzyt rede?",
+                datei: "foto_15.jpg"
+            },
+
+            // 16 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Iced Coffee ❤️",
+                text: "Luscht ufnes Iced Coffee? Ig hole dir eis❤️"
+            },
+
+            // 17 - Foto
+            {
+                typ: "foto",
+                titel: "so schön mit dir id dä Bärgä ❤️",
+                datei: "foto_17.jpg"
+            },
+
+            // 18 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Mixed-Fruit-Juice ❤️",
+                text: "mau am Strasserand e mixed-fruit Juice wöue? ❤️"
+            },
+
+            // 19 - Foto
+            {
+                typ: "foto",
+                titel: "o Vietnam isch es spannends Land gsi",
+                datei: "foto_19.jpg"
+            },
+
+            // 20 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Streetfood ❤️",
+                text: "Zyt für Streetfood, chasch dir öppis ussueche❤️"
+            },
+
+            // 21 - Foto
+            {
+                typ: "foto",
+                titel: "genau vor eim Jahr - denn ischs chli cheuter gsi",
+                datei: "foto_21.jpg"
+            },
+
+            // 22 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Roller-Loop und Massage ❤️",
+                text: "gli geits mitm Roller-Loop los - gö mr doch nomau id Massage❤️"
+            },
+
+            // 23 - Foto
+            {
+                typ: "foto",
+                titel: "eifach nomau es tolls Foto vo üs ❤️",
+                datei: "foto_23.jpg"
+            },
+
+            // 24 - Gutschein
+            {
+                typ: "gutschein",
+                titel: "Es letschts Znacht ❤️",
+                text: "hüt aabe geit ds z'nacht nomau uf mi❤️"
+            }
+
+        ];
+
+
+        // ========================================
+        // SPEICHER
+        // ========================================
+
+        // Neuer Speichername für Anina.
+        // Frühere Test-Türchen werden nicht übernommen.
+
+        const SPEICHER_SCHLUESSEL =
+            "adventskalender_anina_2026";
+
+
+        function geleseneTuerchenLaden() {
+            try {
+                const gespeichert = localStorage.getItem(
+                    SPEICHER_SCHLUESSEL
+                );
+
+                return gespeichert ? JSON.parse(gespeichert) : [];
+
+            } catch (fehler) {
+                return [];
+            }
+        }
+
+
+        function geleseneTuerchenSpeichern(liste) {
+            localStorage.setItem(
+                SPEICHER_SCHLUESSEL,
+                JSON.stringify(liste)
+            );
+        }
+
+
+        let geoeffneteTuerchen = geleseneTuerchenLaden();
+
+
+        // ========================================
+        // DATUMSPRÜFUNG
+        // ========================================
+
+function istTuerchenOffen(nummer) {
+    return true;
+}
+
+
+        // ========================================
+        // KALENDER ERSTELLEN
+        // ========================================
+
+        const kalender = document.getElementById("kalender");
+
+
+        function kalenderErstellen() {
+
+            kalender.innerHTML = "";
+
+            ueberraschungen.forEach((ueberraschung, index) => {
+
+                const nummer = index + 1;
+
+                const offen = istTuerchenOffen(nummer);
+
+                const bereitsGeoeffnet =
+                    geoeffneteTuerchen.includes(nummer);
+
+                const tuer = document.createElement("button");
+
+                tuer.type = "button";
+                tuer.className = "tuerchen";
+
+                tuer.textContent = nummer;
+
+                tuer.setAttribute(
+                    "aria-label",
+                    offen
+                        ? "Türchen " + nummer + " öffnen"
+                        : "Türchen " + nummer + " ist noch geschlossen"
+                );
+
+                // Stern oben rechts
+                const sternOben = document.createElement("span");
+                sternOben.className = "stern stern-oben";
+                sternOben.textContent = "✦";
+
+                // Stern unten links
+                const sternUnten = document.createElement("span");
+                sternUnten.className = "stern stern-unten";
+                sternUnten.textContent = "✧";
+
+                tuer.appendChild(sternOben);
+                tuer.appendChild(sternUnten);
+
+                if (!offen) {
+                    tuer.disabled = true;
+                }
+
+                if (bereitsGeoeffnet) {
+                    tuer.classList.add("geoeffnet");
+                }
+
+                tuer.addEventListener("click", () => {
+
+                    if (!istTuerchenOffen(nummer)) {
+                        return;
+                    }
+
+                    ueberraschungOeffnen(nummer);
+                });
+
+                kalender.appendChild(tuer);
+            });
+        }
+
+
+        // ========================================
+        // ÜBERRASCHUNG ÖFFNEN
+        // ========================================
+
+        const modalHintergrund =
+            document.getElementById("modalHintergrund");
+
+        const modalTitel =
+            document.getElementById("modalTitel");
+
+        const modalInhalt =
+            document.getElementById("modalInhalt");
+
+        const schliessenButton =
+            document.getElementById("schliessenButton");
+
+
+        function ueberraschungOeffnen(nummer) {
+
+            if (!istTuerchenOffen(nummer)) {
+                return;
+            }
+
+            const ueberraschung = ueberraschungen[nummer - 1];
+
+            modalTitel.textContent = ueberraschung.titel;
+
+            modalInhalt.innerHTML = "";
+
+            // Foto anzeigen
+            if (ueberraschung.typ === "foto") {
+
+                const bild = document.createElement("img");
+
+                bild.alt = ueberraschung.titel;
+
+                // Beide Dateiendungen automatisch unterstützen
+                const dateiname = ueberraschung.datei;
+
+                const basisname = dateiname.replace(/\.(jpg|jpeg)$/i, "");
+
+                const endung = dateiname.match(/\.(jpg|jpeg)$/i)?.[1]?.toLowerCase();
+
+                const bildPfade = [
+                    "Bilder/" + dateiname,
+                    "Bilder/" + basisname + (endung === "jpg" ? ".jpeg" : ".jpg")
+                ];
+
+                let aktuellerPfad = 0;
+
+                function bildLaden() {
+
+                    if (aktuellerPfad >= bildPfade.length) {
+
+                        bild.style.display = "none";
+
+                        const fehlermeldung = document.createElement("p");
+
+                        fehlermeldung.textContent =
+                            "Das Foto konnte nicht geladen werden. " +
+                            "Bitte prüfe, ob die Bilddatei im Ordner Bilder vorhanden ist.";
+
+                        modalInhalt.appendChild(fehlermeldung);
+
+                        return;
+                    }
+
+                    bild.src = bildPfade[aktuellerPfad];
+                    aktuellerPfad++;
+                }
+
+                bild.onerror = bildLaden;
+
+                bildLaden();
+
+                modalInhalt.appendChild(bild);
+            }
+
+            // Gutschein anzeigen
+            else if (ueberraschung.typ === "gutschein") {
+
+                const text = document.createElement("p");
+
+                text.textContent = ueberraschung.text;
+
+                modalInhalt.appendChild(text);
+            }
+
+            // Türchen als geöffnet speichern
+            if (!geoeffneteTuerchen.includes(nummer)) {
+
+                geoeffneteTuerchen.push(nummer);
+
+                geleseneTuerchenSpeichern(geoeffneteTuerchen);
+            }
+
+            kalenderErstellen();
+
+            modalHintergrund.classList.add("aktiv");
+
+            schliessenButton.focus();
+        }
+
+
+        // ========================================
+        // MODAL SCHLIESSEN
+        // ========================================
+
+        function modalSchliessen() {
+
+            modalHintergrund.classList.remove("aktiv");
+        }
+
+
+        schliessenButton.addEventListener(
+            "click",
+            modalSchliessen
+        );
+
+
+        // Klick auf den dunklen Hintergrund schliesst das Modal
+        modalHintergrund.addEventListener("click", (event) => {
+
+            if (event.target === modalHintergrund) {
+                modalSchliessen();
+            }
+        });
+
+
+        // Schliessen mit Escape
+        document.addEventListener("keydown", (event) => {
+
+            if (event.key === "Escape") {
+                modalSchliessen();
+            }
+        });
+
+
+        // ========================================
+        // SCHNEE
+        // ========================================
+
+        function schneeErstellen() {
+
+            const schneeflocke = document.createElement("div");
+
+            schneeflocke.className = "schnee";
+            schneeflocke.textContent = "❄";
+
+            schneeflocke.style.left =
+                Math.random() * 100 + "vw";
+
+            schneeflocke.style.fontSize =
+                (Math.random() * 12 + 8) + "px";
+
+            const dauer = Math.random() * 8 + 7;
+
+            schneeflocke.style.animationDuration =
+                dauer + "s";
+
+            document.body.appendChild(schneeflocke);
+
+            // Flocke nach der Animation entfernen
+            schneeflocke.addEventListener("animationend", () => {
+                schneeflocke.remove();
+            });
+        }
+
+
+        // ========================================
+        // GOLDENE STERNE
+        // ========================================
+
+        function goldsternErstellen() {
+
+            const stern = document.createElement("div");
+
+            stern.className = "goldstern";
+            stern.textContent = "✦";
+
+            stern.style.left =
+                Math.random() * 100 + "vw";
+
+            stern.style.top =
+                Math.random() * 100 + "vh";
+
+            stern.style.fontSize =
+                (Math.random() * 15 + 10) + "px";
+
+            stern.style.animationDelay =
+                Math.random() * 3 + "s";
+
+            document.body.appendChild(stern);
+
+            // Stern nach 10 Sekunden entfernen
+            setTimeout(() => {
+                stern.remove();
+            }, 10000);
+        }
+
+
+        // ========================================
+        // ANIMATIONEN STARTEN
+        // ========================================
+
+        const reduzierteBewegung = window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+        if (!reduzierteBewegung) {
+
+            // Schnee erzeugen
+            setInterval(schneeErstellen, 350);
+
+            // Goldene Sterne erzeugen
+            setInterval(goldsternErstellen, 1800);
+        }
+
+
+        // ========================================
+        // PERSÖNLICHE BEGRÜSSUNG
+        // ========================================
+
+        const begruesungHintergrund =
+            document.getElementById("begruesungHintergrund");
+
+        const begruesungButton =
+            document.getElementById("begruesungButton");
+
+        const BEGRUESUNG_SCHLUESSEL =
+            "adventskalender_anina_begruesst_2026";
+
+
+        function begruesungAnzeigen() {
+
+            const bereitsBegruesst =
+                localStorage.getItem(BEGRUESUNG_SCHLUESSEL);
+
+            // Begrüssung nur beim ersten Besuch anzeigen
+            if (!bereitsBegruesst) {
+                begruesungHintergrund.classList.add("aktiv");
+            }
+        }
+
+
+        begruesungButton.addEventListener("click", () => {
+
+            // Begrüssung schliessen
+            begruesungHintergrund.classList.remove("aktiv");
+
+            // Besuch speichern
+            localStorage.setItem(
+                BEGRUESUNG_SCHLUESSEL,
+                "ja"
+            );
+        });
+
+
+        // ========================================
+        // START
+        // ========================================
+
+        kalenderErstellen();
+
+        begruesungAnzeigen();
+
+    </script>
+
+</body>
+</html>
